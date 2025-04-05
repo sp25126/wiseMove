@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wise Move MVP Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Gradient Background -->
+  <div class="gradient-bg"></div>
+
+  <!-- Main Dashboard Content -->
+  <div class="dashboard">
+    <!-- Header -->
+    <header class="header animate-fade">
+      <h1>Wise Move</h1>
+      <div class="search-bar">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search for a city..."
+          class="animate-slide"
+        />
+        <button onclick="searchCity()" class="gradient-button animate-pulse">
+          Search
+        </button>
+      </div>
+    </header>
+
+    <!-- Quick Stats -->
+    <div class="stats-bar animate-fade">
+      <span id="statPopulation"></span> |
+      <span id="statDensity"></span> |
+      <span id="statPollution">Pollution: N/A</span>
+    </div>
+
+    <!-- City Info -->
+    <section class="city-info animate-slide">
+      <h2 id="cityName"></h2>
+      <p id="cityDescription" class="description-text"></p>
+    </section>
+
+    <!-- Dashboard Sections -->
+    <div class="dashboard-sections">
+      <div class="section gradient-section animate-fade">
+        <h2>Cost of Living</h2>
+        <div class="chart-container">
+          <canvas id="costChart"></canvas>
+        </div>
+      </div>
+      <div class="section gradient-section animate-fade">
+        <h2>Housing</h2>
+        <p id="housingInfo" class="description-text"></p>
+      </div>
+      <div class="section gradient-section animate-fade">
+        <h2>Transport</h2>
+        <p id="transportInfo" class="description-text"></p>
+      </div>
+      <div class="section gradient-section animate-fade">
+        <h2>Reviews</h2>
+        <div id="reviewsList" class="description-text"></div>
+        <input
+          id="reviewInput"
+          type="text"
+          placeholder="Add a review..."
+          class="form-control animate-slide"
+        />
+        <button onclick="addReview()" class="gradient-button animate-pulse">
+          Submit
+        </button>
+      </div>
+      <div class="section gradient-section weather-widget animate-fade">
+        <h2>Weather</h2>
+        <p id="weatherInfo" class="description-text"></p>
+      </div>
+    </div>
+
+    <!-- Chatbot UI -->
+    <button class="gradient-button chatbot-toggle animate-pulse" onclick="toggleChatbot()">Chat</button>
+    <div class="chatbot-popup gradient-section" id="chatbotPopup">
+      <div class="chatbot-header">
+        <div class="icon">W</div>
+        <div class="info">
+          <h3>Wise Move Assistant</h3>
+          <p>Ask me about cities and comparisons</p>
+        </div>
+      </div>
+      <div class="chatbot-messages" id="chatbotMessages"></div>
+      <div class="chatbot-input-container">
+        <input type="text" class="chatbot-input" id="chatbotInput" placeholder="Type your message..." onkeydown="if(event.key === 'Enter') sendMessage()">
+        <button onclick="sendMessage()">▶</button>
+      </div>
+    </div>
+
+    <!-- Comparison Modal -->
+    <div class="modal" id="compareModal">
+      <div class="modal-content gradient-section animate-fade">
+        <span class="close" onclick="closeModal()">×</span>
+        <h2>City Comparison</h2>
+        <select id="compareSelect" class="form-control animate-slide">
+          <option value="">Select a city to compare</option>
+        </select>
+        <div class="chart-container">
+          <canvas id="compareChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
