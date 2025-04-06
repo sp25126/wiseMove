@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel & Lifestyle Loader</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .loader-container {
+            text-align: center;
+        }
+        
+        .loader-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        
+        .loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            width: 300px;
+            height: 100px;
+        }
+        
+        .loader-icon {
+            position: absolute;
+            font-size: 30px;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .food { color: #FF6B6B; }
+        .hotel { color: #4ECDC4; }
+        .house { color: #45B7D1; }
+        .place { color: #FFBE0B; }
+        .school { color: #8338EC; }
+        .shopping { color: #FF006E; }
+        .transport { color: #3A86FF; }
+        
+        .loading-text {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #666;
+        }
+        
+        .progress-bar {
+            width: 200px;
+            height: 4px;
+            background-color: #e0e0e0;
+            border-radius: 2px;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #FF6B6B, #8338EC);
+            transition: width 0.3s ease;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="loader-container">
+        <div class="loader-title">Discover Amazing Places</div>
+        
+        <div class="loader">
+            <i class="loader-icon food fas fa-utensils"></i>
+            <i class="loader-icon hotel fas fa-hotel"></i>
+            <i class="loader-icon house fas fa-home"></i>
+            <i class="loader-icon place fas fa-umbrella-beach"></i>
+            <i class="loader-icon school fas fa-school"></i>
+            <i class="loader-icon shopping fas fa-shopping-bag"></i>
+            <i class="loader-icon transport fas fa-bus"></i>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress"></div>
+        </div>
+        
+        <div class="loading-text">Loading recommendations...</div>
+    </div>
+
+    <script>
+        const icons = document.querySelectorAll('.loader-icon');
+        const progress = document.querySelector('.progress');
+        const loadingText = document.querySelector('.loading-text');
+        const texts = [
+            "Finding best restaurants...",
+            "Locating top-rated hotels...",
+            "Searching beautiful homes...",
+            "Discovering amazing places...",
+            "Identifying excellent schools...",
+            "Looking for shopping areas...",
+            "Checking transportation options..."
+        ];
+        
+        let currentIndex = 0;
+        let progressValue = 0;
+        
+        function animateLoader() {
+            // Reset all icons
+            icons.forEach(icon => {
+                icon.style.opacity = '0';
+                icon.style.transform = 'scale(0.5)';
+            });
+            
+            // Show current icon
+            icons[currentIndex].style.opacity = '1';
+            icons[currentIndex].style.transform = 'scale(1)';
+            
+            // Update loading text
+            loadingText.textContent = texts[currentIndex];
+            
+            // Update progress
+            progressValue += 100 / (icons.length - 1);
+            progress.style.width = `${Math.min(progressValue, 100)}%`;
+            
+            // Move to next icon
+            currentIndex = (currentIndex + 1) % icons.length;
+            
+            // Repeat animation
+            if (progressValue < 100) {
+                setTimeout(animateLoader, 800);
+            } else {
+                // Loading complete
+                setTimeout(() => {
+                    loadingText.textContent = "Ready to explore!";
+                    document.querySelector('.loader-title').textContent = "Let's Go!";
+                }, 500);
+            }
+        }
+        
+        // Start animation
+        setTimeout(animateLoader, 500);
+    </script>
+</body>
+</html>

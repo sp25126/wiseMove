@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>City Data Test</title>
+</head>
+<body>
+  <h1>City Info</h1>
+  <pre id="output">Loading...</pre>
+
+  <script>
+    async function getCityData(cityName) {
+      const nominatimUrl = `https://nominatim.openstreetmap.org/search?city=${encodeURIComponent(cityName)}&format=json&extratags=1`;
+      const nominatimRes = await fetch(nominatimUrl);
+      const places = await nominatimRes.json();
+      if (places.length === 0) return "City not found";
+      const place = places[0];
+      const wikidataId = place.extratags.wikidata;
+      const { lat, lon } = place;
+
+      const sparqlQuery = `
+        SELECT ?population ?rent ?foodCost ?dishLabel WHERE {
+          OPTIONAL { wd:${wikidataId} wdt:P1082 ?population. }
+          OPTIONAL { wd:${wikidataId} wdt:P2299 ?rent. }
+          OPTIONAL { wd:${wikidataId} wdt:P2250 ?foodCost. }
+          OPTIONAL {
+            wd:${wikidataId} wdt:P190 ?region.
+            ?dish wdt:P495 ?region; wdt:P279 wd:Q746549.
+            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+          }
+        }
+      `;
+      const wikidataUrl = `https://query.wikidata.org/sparql?query=${encodeURIComponent(sparqlQuery)}`;
+      const wikidataRes = await fetch(wikidataUrl, { headers: { 'Accept': 'application/sparql-results+json' } });
+      const wikidataData = await wikidataRes.json();
+
+      const result = wikidataData.results.bindings[0];
+      const population = result?.population?.value || "N/A";
+      const accommodationCost = result?.rent?.value || "N/A";
+      const foodCost = result?.foodCost?.value || "N/A";
+      const localDishes = wikidataData.results.bindings.map(binding => binding.dishLabel?.value).filter(Boolean);
+
+      const overpassQuery = `[out:json];area[name="${cityName}"]->.a;(node["tourism"="attraction"](area.a););out;`;
+      const overpassUrl = 'https://overpass-api.de/api/interpreter';
+      const overpassRes = await fetch(overpassUrl, { method: 'POST', body: overpassQuery });
+      const overpassData = await overpassRes.json();
+      const attractions = overpassData.elements.map(el => el.tags?.name).filter(Boolean);
+
+      const hotelQuery = `[out:json];area[name="${cityName}"]->.a;(node["tourism"="hotel"](area.a););out;`;
+      const hotelRes = await fetch(overpassUrl, { method: 'POST', body: hotelQuery });
+      const hotelData = await hotelRes.json();
+      const hotels = hotelData.elements.map(el => ({
+        name: el.tags?.name,
+        stars: el.tags?.stars || "Not rated",
+      })).filter(h => h.name);
+
+      const cityData = {
+        city: cityName,
+        population,
+        accommodationCost,
+        foodCost,
+        localDishes,
+        attractions,
+        hotels
+      };
+
+      document.getElementById("output").textContent = JSON.stringify(cityData, null, 2);
+    }
+
+    getCityData("Barcelona");
+  </script>
+</body>
+</html>

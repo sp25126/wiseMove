@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cost of Living - Wise Move</title>
+  <style>
+    /* Basic Reset and Typography */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial', sans-serif;
+    }
+    body {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+    }
+    header {
+      margin-top: 20px;
+      font-size: 2rem;
+      font-weight: bold;
+    }
+    /* Cards Container */
+    #cardsContainer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin: 30px 0;
+      width: 100%;
+      max-width: 1200px;
+      position: relative;
+      z-index: 1;
+    }
+    .card {
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 20px;
+      width: 200px;
+      height: 150px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      overflow: hidden;
+    }
+    .card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    }
+    /* More Info Button */
+    .more-info-btn {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      padding: 6px 12px;
+      background: linear-gradient(45deg, #ff00cc, #3333ff);
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      cursor: pointer;
+    }
+    .card:hover .more-info-btn {
+      opacity: 1;
+    }
+    /* Expanded Card Effect */
+    .card.expanded {
+      transform: scale(1.2) translateX(120%);
+      z-index: 10;
+    }
+    /* Info Panel (Sidebar) */
+    .info-panel {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 30%;
+      height: 100%;
+      background: #ffffff;
+      color: #333;
+      padding: 20px;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+      transform: translateX(-100%);
+      transition: transform 0.5s ease;
+      overflow-y: auto;
+      z-index: 11;
+    }
+    .info-panel.active {
+      transform: translateX(0);
+    }
+    .info-panel h2 {
+      margin-top: 0;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+    }
+    .info-panel ul {
+      list-style: disc;
+      padding-left: 20px;
+      line-height: 1.5;
+    }
+    .back-btn {
+      margin-top: 20px;
+      background: #ff7675;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    /* Loader (for initial data load) */
+    .loader {
+      text-align: center;
+      margin-top: 100px;
+      font-size: 22px;
+    }
+  </style>
+</head>
+<body>
+  <header>Cost of Living in Barcelona</header>
+
+  <div id="cardsContainer">
+    <!-- Cards will be inserted dynamically -->
+    <div class="loader" id="loader">Loading data...</div>
+  </div>
+
+  <div class="info-panel hidden" id="infoPanel">
+    <h2 id="panelTitle">Details</h2>
+    <ul id="panelList"></ul>
+    <button class="back-btn" onclick="resetView()">← Back</button>
+  </div>
+
+  <script>
+    // Use window.cityData to avoid redeclaration errors.
+    window.cityData = window.cityData || null;
+
+    const categories = [
+      { type: "hotels", label: "Hotels" },
+      { type: "food", label: "Food Cost" },
+      { type: "rent", label: "Accommodation" },
+      { type: "population", label: "Population" },
+      { type: "dishes", label: "Local Dishes" },
+      { type: "attractions", label: "Attractions" }
+    ];
+
+    function renderCards() {
+      const container = document.getElementById("cardsContainer");
+      container.innerHTML = "";
+      categories.forEach(category => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.dataset.type = category.type;
+        card.innerHTML = `<h3>${category.label}</h3><button class="more-info-btn" onclick="showDetails(event, '${category.type}')">More Info</button>`;
+        container.appendChild(card);
+      });
+    }
+
+    function showDetails(event, type) {
+      event.stopPropagation();
+      document.querySelectorAll('.card').forEach(card => card.classList.remove("expanded"));
+      event.currentTarget.parentElement.classList.add("expanded");
+
+      const panel = document.getElementById("infoPanel");
+      panel.classList.add("active");
+      const panelTitle = document.getElementById("panelTitle");
+      const panelList = document.getElementById("panelList");
+      panelTitle.textContent = getCategoryLabel(type);
+      panelList.innerHTML = "";
+
+      if (!window.cityData) return;
+      let items = [];
+      switch (type) {
+        case "hotels":
+          items = window.cityData.hotels;
+          break;
+        case "food":
+          items = [`Average Food Cost: € ${window.cityData.foodCost}`];
+          break;
+        case "rent":
+          items = [`Average Rent: € ${window.cityData.accommodationCost}`];
+          break;
+        case "population":
+          items = [`Population: ${window.cityData.population}`];
+          break;
+        case "dishes":
+          items = window.cityData.localDishes;
+          break;
+        case "attractions":
+          items = window.cityData.attractions;
+          break;
+      }
+      if (items.length === 0) {
+        panelList.innerHTML = "<li>No data available</li>";
+      } else {
+        items.forEach(item => {
+          const li = document.createElement("li");
+          if (type === "hotels") {
+            li.innerHTML = `<strong>${item.name}</strong> - ${item.stars}<br><a href="${item.link}" target="_blank">View on Map</a>`;
+          } else {
+            li.textContent = item;
+          }
+          panelList.appendChild(li);
+        });
+      }
+    }
+
+    function resetView() {
+      document.querySelectorAll('.card').forEach(card => card.classList.remove("expanded"));
+      document.getElementById("infoPanel").classList.remove("active");
+      document.getElementById("infoPanel").classList.add("hidden");
+    }
+
+    function getCategoryLabel(type) {
+      const cat = categories.find(c => c.type === type);
+      return cat ? cat.label : "";
+    }
+
+    async function getCityData(cityName) {
+      try {
+        // Fetch from Nominatim
+        const nominatimUrl = `https://nominatim.openstreetmap.org/search?city=${encodeURIComponent(cityName)}&format=json&extratags=1`;
+        const nomRes = await fetch(nominatimUrl);
+        const places = await nomRes.json();
+        if (places.length === 0) return console.error("City not found");
+        const place = places[0];
+        const wikidataId = place.extratags.wikidata;
+
+        // Wikidata SPARQL query for population, accommodation cost, food cost, and local dishes
+        const sparqlQuery = `
+          SELECT ?population ?rent ?foodCost ?dishLabel WHERE {
+            OPTIONAL { wd:${wikidataId} wdt:P1082 ?population. }
+            OPTIONAL { wd:${wikidataId} wdt:P2299 ?rent. }
+            OPTIONAL { wd:${wikidataId} wdt:P2250 ?foodCost. }
+            OPTIONAL {
+              wd:${wikidataId} wdt:P190 ?region.
+              ?dish wdt:P495 ?region; wdt:P279 wd:Q746549.
+              SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+            }
+          }
+          LIMIT 10
+        `;
+        const wikidataUrl = `https://query.wikidata.org/sparql?query=${encodeURIComponent(sparqlQuery)}`;
+        const wikidataRes = await fetch(wikidataUrl, { headers: { 'Accept': 'application/sparql-results+json' } });
+        const wikidataData = await wikidataRes.json();
+        const result = wikidataData.results.bindings[0];
+        const population = result?.population?.value || "N/A";
+        const accommodationCost = result?.rent?.value || "N/A";
+        const foodCost = result?.foodCost?.value || "N/A";
+        const localDishes = wikidataData.results.bindings.map(binding => binding.dishLabel?.value).filter(Boolean);
+
+        // Overpass API queries for attractions and hotels
+        const overpassUrl = 'https://overpass-api.de/api/interpreter';
+        const attractionsQuery = `[out:json];area[name="${cityName}"]->.a;(node["tourism"="attraction"](area.a););out;`;
+        const hotelQuery = `[out:json];area[name="${cityName}"]->.a;(node["tourism"="hotel"](area.a););out;`;
+        
+        const [attrRes, hotelRes] = await Promise.all([
+          fetch(overpassUrl, { method: 'POST', body: attractionsQuery }),
+          fetch(overpassUrl, { method: 'POST', body: hotelQuery })
+        ]);
+        const attrData = await attrRes.json();
+        const hotelData = await hotelRes.json();
+        const attractions = attrData.elements.map(el => el.tags?.name).filter(Boolean);
+        const hotels = hotelData.elements.map(el => ({
+          name: el.tags?.name,
+          stars: el.tags?.stars || "Not rated",
+          link: `https://www.openstreetmap.org/?mlat=${el.lat}&mlon=${el.lon}`
+        })).filter(h => h.name);
+
+        window.cityData = {
+          city: cityName,
+          population,
+          accommodationCost,
+          foodCost,
+          localDishes,
+          attractions,
+          hotels
+        };
+
+        renderCards();
+      } catch (err) {
+        console.error("Error fetching city data:", err);
+      }
+    }
+
+    getCityData("Barcelona");
+  </script>
+</body>
+</html>

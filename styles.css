@@ -1,402 +1,493 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
-  }
-  
-  body {
-    min-height: 100vh;
-    overflow-x: hidden;
-    position: relative;
-    color: #fff;
-  }
-  
-  /* Gradient Background with More Colors */
-  .gradient-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96c93d, #f7d794, #ff9f1c, #d64161, #6a0572, #ff6b6b);
-    background-size: 800% 800%;
-    animation: gradientShift 40s ease infinite;
-    z-index: -1;
-  }
-  
-  @keyframes gradientShift {
-    0% { background-position: 0% 0%; }
-    50% { background-position: 100% 100%; }
-    100% { background-position: 0% 0%; }
-  }
-  
-  /* Dashboard Container */
-  .dashboard {
-    position: relative;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  /* Header */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  color: #fff;
+}
+
+/* Gradient Background with More Colors */
+.gradient-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96c93d, #f7d794, #ff9f1c, #d64161, #6a0572, #ff6b6b);
+  background-size: 800% 800%;
+  animation: gradientShift 40s ease infinite;
+  z-index: -1;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+/* Dashboard Container */
+.dashboard {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 2rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.search-bar {
+  display: flex;
+  width: 100%;
+  max-width: 400px;
+}
+
+.search-bar input {
+  flex-grow: 1;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px 0 0 20px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  outline: none;
+}
+
+/* Stats Bar */
+.stats-bar {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  text-align: center;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  margin-bottom: 20px;
+  font-size: 1rem;
+}
+
+/* City Info */
+.city-info {
+  text-align: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  margin-bottom: 20px;
+}
+
+.city-info h2 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  animation: glow 3s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%, 100% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
+  50% { text-shadow: 0 0 15px rgba(255, 255, 255, 1); }
+}
+
+.description-text {
+  font-size: 1.1rem;
+  white-space: pre-line;
+  line-height: 1.5;
+  color: #fff;
+}
+
+/* Dashboard Sections */
+.dashboard-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 0 10px;
+}
+
+.gradient-section {
+  background: linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1, #96c93d, #d64161, #6a0572);
+  background-size: 400% 400%;
+  animation: sectionGradient 30s ease infinite;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes sectionGradient {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+.section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 200px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.3);
+  color: #fff;
+  margin-top: 10px;
+}
+
+.gradient-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(45deg, #f7d794, #ff9f1c, #d64161, #6a0572, #96c93d);
+  background-size: 300% 300%;
+  animation: buttonGradient 25s ease infinite;
+  color: #fff;
+  cursor: pointer;
+  margin-top: 10px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+@keyframes buttonGradient {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+/* Chatbot Styles */
+.chatbot-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}
+
+.chatbot-popup {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 90%;
+  max-width: 350px;
+  height: 400px;
+  display: none;
+  animation: slideUp 0.5s ease-out;
+}
+
+.chatbot-popup.active {
+  display: block;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.chatbot-header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.chatbot-header .icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+
+.chatbot-messages {
+  height: 300px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  padding: 10px;
+  color: #fff;
+}
+
+.chatbot-input-container {
+  display: flex;
+  padding: 10px;
+}
+
+.chatbot-input {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 20;
+}
+
+.modal-content {
+  margin: 5% auto;
+  padding: 20px;
+  width: 90%;
+  max-width: 600px;
+  border-radius: 20px;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #fff;
+}
+
+/* Animations */
+.animate-fade {
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-slide {
+  animation: slideIn 0.8s ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
   .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
-    margin-bottom: 20px;
+    flex-direction: column;
+    text-align: center;
   }
-  
   .header h1 {
-    font-size: 2rem;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  }
-  
-  .search-bar {
-    display: flex;
-    width: 100%;
-    max-width: 400px;
-  }
-  
-  .search-bar input {
-    flex-grow: 1;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 20px 0 0 20px;
-    background: rgba(255, 255, 255, 0.2);
-    color: #fff;
-    outline: none;
-  }
-  
-  /* Stats Bar */
-  .stats-bar {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 10px;
-    text-align: center;
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
-    margin-bottom: 20px;
-    font-size: 1rem;
-  }
-  
-  /* City Info */
-  .city-info {
-    text-align: center;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
-    margin-bottom: 20px;
-  }
-  
-  .city-info h2 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-    animation: glow 3s ease-in-out infinite;
-  }
-  
-  @keyframes glow {
-    0%, 100% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
-    50% { text-shadow: 0 0 15px rgba(255, 255, 255, 1); }
-  }
-  
-  .description-text {
-    font-size: 1.1rem;
-    white-space: pre-line;
-    line-height: 1.5;
-    color: #fff;
-  }
-  
-  /* Dashboard Sections */
-  .dashboard-sections {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 0 10px;
-  }
-  
-  .gradient-section {
-    background: linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1, #96c93d, #d64161, #6a0572);
-    background-size: 400% 400%;
-    animation: sectionGradient 30s ease infinite;
-    border-radius: 20px;
-    padding: 20px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-  }
-  
-  @keyframes sectionGradient {
-    0% { background-position: 0% 0%; }
-    50% { background-position: 100% 100%; }
-    100% { background-position: 0% 0%; }
-  }
-  
-  .section h2 {
     font-size: 1.5rem;
     margin-bottom: 10px;
   }
-  
-  .chart-container {
-    position: relative;
-    width: 100%;
+  .search-bar {
+    max-width: 100%;
+  }
+  .city-info h2 {
+    font-size: 2rem;
+  }
+  .dashboard-sections {
+    grid-template-columns: 1fr;
+  }
+  .section h2 {
+    font-size: 1.3rem;
+  }
+  .chatbot-popup {
+    bottom: 60px;
+    right: 10px;
+    height: 300px;
+  }
+  .chatbot-messages {
     height: 200px;
   }
-  
-  .form-control {
-    width: 100%;
-    padding: 8px;
-    border: none;
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.3);
-    color: #fff;
-    margin-top: 10px;
+  .chart-container {
+    height: 150px;
   }
-  
+}
+
+@media (max-width: 480px) {
+  .stats-bar {
+    font-size: 0.9rem;
+  }
+  .city-info h2 {
+    font-size: 1.5rem;
+  }
+  .description-text {
+    font-size: 0.9rem;
+  }
+  .section {
+    padding: 15px;
+  }
   .gradient-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 20px;
-    background: linear-gradient(45deg, #f7d794, #ff9f1c, #d64161, #6a0572, #96c93d);
-    background-size: 300% 300%;
-    animation: buttonGradient 25s ease infinite;
-    color: #fff;
-    cursor: pointer;
-    margin-top: 10px;
+    padding: 8px 15px;
   }
-  
-  @keyframes buttonGradient {
-    0% { background-position: 0% 0%; }
-    50% { background-position: 100% 100%; }
-    100% { background-position: 0% 0%; }
+  .chart-container {
+    height: 120px;
   }
-  
-  /* Chatbot Styles */
-  .chatbot-toggle {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-  }
-  
-  .chatbot-popup {
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    width: 90%;
-    max-width: 350px;
-    height: 400px;
-    display: none;
-    animation: slideUp 0.5s ease-out;
-  }
-  
-  .chatbot-popup.active {
-    display: block;
-  }
-  
-  @keyframes slideUp {
-    from { transform: translateY(100%); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-  
-  .chatbot-header {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-  }
-  
-  .chatbot-header .icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 10px;
-  }
-  
-  .chatbot-messages {
-    height: 300px;
-    overflow-y: auto;
-    margin-bottom: 10px;
-    padding: 10px;
-    color: #fff;
-  }
-  
-  .chatbot-input-container {
-    display: flex;
-    padding: 10px;
-  }
-  
-  .chatbot-input {
-    width: 100%;
-    padding: 8px;
-    border: none;
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.3);
-    color: #fff;
-  }
-  
-  /* Modal */
-  .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 20;
-  }
-  
-  .modal-content {
-    margin: 5% auto;
-    padding: 20px;
-    width: 90%;
-    max-width: 600px;
-    border-radius: 20px;
-  }
-  
-  .close {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    font-size: 2rem;
-    cursor: pointer;
-    color: #fff;
-  }
-  
-  /* Animations */
-  .animate-fade {
-    animation: fadeIn 1s ease-in-out;
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  
-  .animate-slide {
-    animation: slideIn 0.8s ease-out;
-  }
-  
-  @keyframes slideIn {
-    from { transform: translateX(-20px); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-  }
-  
-  .animate-pulse {
-    animation: pulse 2s infinite;
-  }
-  
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .header {
-      flex-direction: column;
-      text-align: center;
-    }
-    .header h1 {
-      font-size: 1.5rem;
-      margin-bottom: 10px;
-    }
-    .search-bar {
-      max-width: 100%;
-    }
-    .city-info h2 {
-      font-size: 2rem;
-    }
-    .dashboard-sections {
-      grid-template-columns: 1fr;
-    }
-    .section h2 {
-      font-size: 1.3rem;
-    }
-    .chatbot-popup {
-      bottom: 60px;
-      right: 10px;
-      height: 300px;
-    }
-    .chatbot-messages {
-      height: 200px;
-    }
-    .chart-container {
-      height: 150px;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .stats-bar {
-      font-size: 0.9rem;
-    }
-    .city-info h2 {
-      font-size: 1.5rem;
-    }
-    .description-text {
-      font-size: 0.9rem;
-    }
-    .section {
-      padding: 15px;
-    }
-    .gradient-button {
-      padding: 8px 15px;
-    }
-    .chart-container {
-      height: 120px;
-    }
-  }
-  
-  /* Chatbot Options Enhancements */
-  .chat-options, .compare-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 10px 0;
-  }
-  
-  .chat-options div, .compare-options div {
-    background: rgba(255,255,255,0.1);
-    padding: 8px 12px;
-    border-radius: 15px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  
-  .chat-options div:hover, .compare-options div:hover {
-    background: rgba(255,255,255,0.2);
-  }
-  
-  .user-message {
-    color: #4ecdc4;
-    margin: 5px 0;
-  }
-  
-  .bot-message {
-    margin: 5px 0;
-    padding: 8px 12px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 0 15px 15px 15px;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 10px 0;
-  }
-  
-  table td, table th {
-    padding: 8px;
-    border: 1px solid rgba(255,255,255,0.2);
-    text-align: left;
-  }
-  
+}
+
+/* Chatbot Options Enhancements */
+.chat-options, .compare-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.chat-options div, .compare-options div {
+  background: rgba(255,255,255,0.1);
+  padding: 8px 12px;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chat-options div:hover, .compare-options div:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.user-message {
+  color: #4ecdc4;
+  margin: 5px 0;
+}
+
+.bot-message {
+  margin: 5px 0;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 0 15px 15px 15px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+}
+
+table td, table th {
+  padding: 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+  text-align: left;
+}
+
+/* Weather Widget Enhancements */
+.weather-widget .description-text {
+  margin: 5px 0;
+}
+
+#aqiInfo {
+  font-weight: bold;
+  color: #4ecdc4; /* Distinct color for AQI */
+}
+
+#pollutionInfo {
+  color: #ff6b6b; /* Distinct color for pollution */
+}
+
+/* Weather Page Specific Styles */
+.weather-icon {
+  font-size: 60px;
+  margin-bottom: 10px;
+  transition: transform 1s ease;
+}
+
+.temperature {
+  font-size: 44px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.description {
+  font-size: 20px;
+  margin-bottom: 16px;
+  text-transform: capitalize;
+}
+
+.precautions {
+  margin-top: 15px;
+  font-weight: bold;
+  color: #c0392b;
+}
+
+.aqi-container {
+  margin-top: 15px;
+  text-align: left;
+  font-size: 16px;
+}
+
+.aqi-bar {
+  height: 18px;
+  border-radius: 10px;
+  background: linear-gradient(to right, green, yellow, orange, red, purple);
+  position: relative;
+  margin-top: 5px;
+}
+
+.aqi-pointer {
+  position: absolute;
+  top: -4px;
+  width: 8px;
+  height: 26px;
+  background: black;
+  border-radius: 4px;
+}
+
+.alert {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+/* Rain Drops Animation */
+.rain {
+  position: absolute;
+  width: 2px;
+  height: 20px;
+  background: #3498db;
+  animation: rainFall 1s linear infinite;
+  opacity: 0.8;
+  z-index: 2;
+}
+
+@keyframes rainFall {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(100px); opacity: 0; }
+}
+
+@media (max-width: 600px) {
+  .temperature { font-size: 36px; }
+  .description { font-size: 18px; }
+  .weather-icon { font-size: 48px; }
+}

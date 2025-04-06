@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wise Move Weather</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Gradient Background -->
+  <div class="gradient-bg"></div>
+
+  <header class="header animate-fade">
+    <h1>Weather & Pollution</h1>
+    <a href="index.html" class="gradient-button animate-pulse">Back to Dashboard</a>
+  </header>
+
+  <!-- Weather Container -->
+  <div class="section gradient-section weather-widget animate-fade">
+    <div class="weather-icon" id="icon">☀️</div>
+    <div class="temperature" id="temp">--°C</div>
+    <div class="description" id="desc">Loading...</div>
+    <div class="description-text" id="cityName">City: --</div>
+    <div class="description-text" id="humidity">Humidity: --%</div>
+    <div class="description-text" id="uv">UV Index: --</div>
+    <div class="description-text" id="sunrise">Sunrise: --</div>
+    <div class="description-text" id="sunset">Sunset: --</div>
+    <div class="description-text precautions" id="precautions">Precautions: --</div>
+    <div class="aqi-container">
+      <div class="description-text" id="aqi">AQI: --</div>
+      <div class="aqi-bar">
+        <div class="aqi-pointer" id="aqiPointer" style="left: 0%"></div>
+      </div>
+      <div class="description-text alert" id="pollutionAlert"></div>
+    </div>
+  </div>
+
+  <script>
+    // Utility: Get URL query parameter
+    function getQueryParam(param) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(param);
+    }
+    const selectedCity = getQueryParam('city') || 'Mumbai';
+
+    // Weather type settings
+    const weatherTypes = {
+      clear: {
+        icon: '☀️',
+        desc: 'Sunny',
+        bg: 'linear-gradient(to bottom, #FFD700, #FFA500)',
+        precaution: 'Stay hydrated and enjoy fresh juice!'
+      },
+      rain: {
+        icon: '🌧️',
+        desc: 'Rainy',
+        bg: 'linear-gradient(to bottom, #5D6D7E, #85929E)',
+        precaution: 'Carry an umbrella and avoid puddles.'
+      },
+      clouds: {
+        icon: '☁️',
+        desc: 'Cloudy',
+        bg: 'linear-gradient(to bottom, #bdc3c7, #2c3e50)',
+        precaution: 'A light jacket is recommended.'
+      },
+      thunderstorm: {
+        icon: '⛈️',
+        desc: 'Stormy',
+        bg: 'linear-gradient(to bottom, #4b79a1, #283e51)',
+        precaution: 'Stay indoors and avoid open areas.'
+      },
+      snow: {
+        icon: '❄️',
+        desc: 'Snowy',
+        bg: 'linear-gradient(to bottom, #e0eafc, #cfdef3)',
+        precaution: 'Wear warm clothes and be careful on roads.'
+      }
+    };
+
+    // Dynamically create rain drops (for rainy weather)
+    function createRainDrops() {
+      const dropContainer = document.createElement('div');
+      dropContainer.id = 'rainContainer';
+      for (let i = 0; i < 30; i++) {
+        const drop = document.createElement('div');
+        drop.className = 'rain';
+        drop.style.left = Math.random() * 100 + '%';
+        drop.style.animationDuration = (0.8 + Math.random() * 1.2) + 's';
+        drop.style.top = Math.random() * 30 + 'px';
+        dropContainer.appendChild(drop);
+      }
+      document.body.appendChild(dropContainer);
+    }
+
+    // Remove existing rain drops
+    function removeRainDrops() {
+      const dropContainer = document.getElementById('rainContainer');
+      if (dropContainer) dropContainer.remove();
+    }
+
+    // Fetch weather data for the selected city
+    async function fetchWeather() {
+      const apiKey = '6c90199bd37484dd3d1d6006a020db59'; // Your API key
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${selectedCity}&appid=${apiKey}&units=metric`;
+      
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        // Extract weather details
+        const temp = Math.round(data.main.temp);
+        const humidity = data.main.humidity;
+        const sunriseTime = new Date(data.sys.sunrise * 1000).toLocaleTimeString();
+        const sunsetTime = new Date(data.sys.sunset * 1000).toLocaleTimeString();
+        const uvIndex = Math.floor(Math.random() * 11); // Placeholder for UV index
+        const aqi = Math.floor(Math.random() * 500);    // Placeholder for AQI
+        const weatherMain = data.weather[0].main.toLowerCase();
+
+        // Determine weather type
+        let type = 'clear';
+        if (weatherMain.includes('rain')) type = 'rain';
+        else if (weatherMain.includes('cloud')) type = 'clouds';
+        else if (weatherMain.includes('thunderstorm')) type = 'thunderstorm';
+        else if (weatherMain.includes('snow')) type = 'snow';
+        const settings = weatherTypes[type] || weatherTypes.clear;
+
+        // Update UI elements
+        document.getElementById('icon').textContent = settings.icon;
+        document.getElementById('temp').textContent = `${temp}°C`;
+        document.getElementById('desc').textContent = data.weather[0].description;
+        document.getElementById('cityName').textContent = `City: ${selectedCity}`;
+        document.getElementById('humidity').textContent = `Humidity: ${humidity}%`;
+        document.getElementById('uv').textContent = `UV Index: ${uvIndex}`;
+        document.getElementById('sunrise').textContent = `Sunrise: ${sunriseTime}`;
+        document.getElementById('sunset').textContent = `Sunset: ${sunsetTime}`;
+        document.getElementById('precautions').textContent = `Precautions: ${settings.precaution}`;
+        document.body.style.background = settings.bg;
+
+        // Update AQI info
+        document.getElementById('aqi').textContent = `AQI: ${aqi}`;
+        const aqiPercent = Math.min((aqi / 500) * 100, 100);
+        document.getElementById('aqiPointer').style.left = `${aqiPercent}%`;
+        let pollutionMsg = "";
+        if (aqi < 50) pollutionMsg = "Air quality is excellent.";
+        else if (aqi < 100) pollutionMsg = "Air quality is moderate.";
+        else if (aqi < 200) pollutionMsg = "Unhealthy for sensitive groups.";
+        else pollutionMsg = "Poor air quality! Wear a mask.";
+        document.getElementById('pollutionAlert').textContent = pollutionMsg;
+
+        // Manage animations based on weather type
+        removeRainDrops();
+        if (type === 'rain' || type === 'thunderstorm') {
+          createRainDrops();
+        }
+
+      } catch (err) {
+        console.error("Error fetching weather:", err);
+        document.getElementById('desc').textContent = "Error loading weather data!";
+      }
+    }
+
+    fetchWeather();
+  </script>
+</body>
+</html>

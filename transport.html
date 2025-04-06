@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wise Move - Transportation</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="gradient-bg"></div>
+  <header class="header animate-fade">
+    <h1>Transportation</h1>
+    <a href="index.html" class="gradient-button animate-pulse">Back to Dashboard</a>
+  </header>
+  <div class="section gradient-section animate-fade">
+    <h2 id="cityName">City: Loading...</h2>
+    <p id="transportDetails" class="description-text">Loading...</p>
+    <div class="description-text">Additional Info: Public transport is widely available, with peak hours from 8-10 AM and 5-7 PM.</div>
+  </div>
+
+  <script>
+    const cities = [
+      { name: "Gurugram", transport: { types: "Metro, Auto", commute: "30 mins to Delhi", cost: "₹2000/month" } },
+      { name: "Mumbai", transport: { types: "Metro, Bus", commute: "45 mins to CST", cost: "₹2500/month" } },
+      { name: "Dehradun", transport: { types: "Bus, Auto", commute: "20 mins to center", cost: "₹1500/month" } },
+      { name: "Lucknow", transport: { types: "Bus, Auto", commute: "25 mins to Charbagh", cost: "₹1800/month" } },
+      { name: "Varanasi", transport: { types: "Auto, Boat", commute: "15 mins to ghats", cost: "₹1600/month" } }
+    ];
+
+    function getQueryParam(param) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(param);
+    }
+
+    const selectedCity = getQueryParam('city') || 'Gurugram';
+    const city = cities.find(c => c.name === selectedCity);
+
+    document.getElementById('cityName').textContent = `City: ${city.name}`;
+    document.getElementById('transportDetails').textContent = `
+      Transport Types: ${city.transport.types}
+      Average Commute: ${city.transport.commute}
+      Monthly Cost: ${city.transport.cost}
+    `;
+  </script>
+</body>
+</html>

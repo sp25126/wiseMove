@@ -1,0 +1,218 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+    <!-- Background with grid -->
+    <defs>
+      <linearGradient id="roadGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#e0e0e0" />
+        <stop offset="100%" stop-color="#d0d0d0" />
+      </linearGradient>
+      <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#c9eeff" />
+        <stop offset="100%" stop-color="#e8f7ff" />
+      </linearGradient>
+      <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse">
+        <path d="M 80 0 L 0 0 0 80" fill="none" stroke="#a0c0ff" stroke-width="0.5" opacity="0.3"/>
+      </pattern>
+      <radialGradient id="carGlow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+        <stop offset="0%" stop-color="#4287f5" stop-opacity="0.6"/>
+        <stop offset="100%" stop-color="#4287f5" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
+      </filter>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="2" result="blur"/>
+        <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+      </filter>
+    </defs>
+  
+    <!-- Sky -->
+    <rect x="0" y="0" width="800" height="250" fill="url(#skyGradient)" />
+    <rect x="0" y="0" width="800" height="250" fill="url(#grid)" />
+  
+    <!-- Road -->
+    <rect x="0" y="250" width="800" height="150" fill="url(#roadGradient)" />
+    
+    <!-- Road lines -->
+    <rect x="0" y="260" width="800" height="2" fill="#a0a0a0" />
+    <rect x="0" y="390" width="800" height="2" fill="#a0a0a0" />
+    
+    <!-- Dashed center line - faster animation for 1.7s runtime -->
+    <g>
+      <rect x="20" y="325" width="50" height="4" fill="#2068d8">
+        <animate attributeName="x" values="800;-50" dur="1.7s" repeatCount="indefinite" />
+      </rect>
+      <rect x="120" y="325" width="50" height="4" fill="#2068d8">
+        <animate attributeName="x" values="900;50" dur="1.7s" repeatCount="indefinite" />
+      </rect>
+      <rect x="220" y="325" width="50" height="4" fill="#2068d8">
+        <animate attributeName="x" values="1000;150" dur="1.7s" repeatCount="indefinite" />
+      </rect>
+      <rect x="320" y="325" width="50" height="4" fill="#2068d8">
+        <animate attributeName="x" values="1100;250" dur="1.7s" repeatCount="indefinite" />
+      </rect>
+      <rect x="420" y="325" width="50" height="4" fill="#2068d8">
+        <animate attributeName="x" values="1200;350" dur="1.7s" repeatCount="indefinite" />
+      </rect>
+      <rect x="520" y="325" width="50" height="4" fill="#2068d8">
+        <animate attributeName="x" values="1300;450" dur="1.7s" repeatCount="indefinite" />
+      </rect>
+      <rect x="620" y="325" width="50" height="4" fill="#2068d8">
+        <animate attributeName="x" values="1400;550" dur="1.7s" repeatCount="indefinite" />
+      </rect>
+      <rect x="720" y="325" width="50" height="4" fill="#2068d8">
+        <animate attributeName="x" values="1500;650" dur="1.7s" repeatCount="indefinite" />
+      </rect>
+    </g>
+  
+    <!-- Futuristic buildings in background -->
+    <g>
+      <rect x="100" y="100" width="30" height="150" fill="#e8f0ff" stroke="#a0c0ff" stroke-width="1" />
+      <rect x="170" y="130" width="40" height="120" fill="#e8f0ff" stroke="#a0c0ff" stroke-width="1" />
+      <rect x="250" y="80" width="50" height="170" fill="#e8f0ff" stroke="#a0c0ff" stroke-width="1" />
+      <rect x="340" y="140" width="35" height="110" fill="#e8f0ff" stroke="#a0c0ff" stroke-width="1" />
+      <rect x="420" y="170" width="25" height="80" fill="#e8f0ff" stroke="#a0c0ff" stroke-width="1" />
+      <rect x="480" y="120" width="45" height="130" fill="#e8f0ff" stroke="#a0c0ff" stroke-width="1" />
+      <rect x="560" y="150" width="30" height="100" fill="#e8f0ff" stroke="#a0c0ff" stroke-width="1" />
+      <rect x="620" y="90" width="55" height="160" fill="#e8f0ff" stroke="#a0c0ff" stroke-width="1" />
+      <rect x="710" y="160" width="20" height="90" fill="#e8f0ff" stroke="#a0c0ff" stroke-width="1" />
+    </g>
+  
+    <!-- Building lights - faster pulsing for 1.7s runtime -->
+    <g>
+      <circle cx="115" cy="120" r="2" fill="#4287f5">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.7s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="115" cy="140" r="2" fill="#4287f5">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.36s" repeatCount="indefinite" begin="0.34s" />
+      </circle>
+      <circle cx="190" cy="150" r="2" fill="#4287f5">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.19s" repeatCount="indefinite" begin="0.51s" />
+      </circle>
+      <circle cx="275" cy="100" r="2" fill="#4287f5">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.53s" repeatCount="indefinite" begin="0.17s" />
+      </circle>
+      <circle cx="275" cy="130" r="2" fill="#4287f5">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.36s" repeatCount="indefinite" begin="0.34s" />
+      </circle>
+      <circle cx="357" cy="160" r="2" fill="#4287f5">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.19s" repeatCount="indefinite" begin="0.51s" />
+      </circle>
+      <circle cx="502" cy="140" r="2" fill="#4287f5">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.36s" repeatCount="indefinite" begin="0.34s" />
+      </circle>
+      <circle cx="575" cy="170" r="2" fill="#4287f5">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.53s" repeatCount="indefinite" begin="0.17s" />
+      </circle>
+      <circle cx="647" cy="110" r="2" fill="#4287f5">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.19s" repeatCount="indefinite" begin="0.51s" />
+      </circle>
+      <circle cx="647" cy="140" r="2" fill="#4287f5">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.36s" repeatCount="indefinite" begin="0.34s" />
+      </circle>
+      <circle cx="720" cy="180" r="2" fill="#4287f5">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.19s" repeatCount="indefinite" begin="0.51s" />
+      </circle>
+    </g>
+  
+    <!-- Car glow effect -->
+    <circle cx="400" cy="350" r="60" fill="url(#carGlow)" filter="url(#blur)">
+      <animate attributeName="opacity" values="0.4;0.7;0.4" dur="1.7s" repeatCount="indefinite" />
+    </circle>
+  
+    <!-- Futuristic Car - BIGGER -->
+    <g>
+      <!-- Car body -->
+      <path d="M 330 350 L 360 320 L 440 320 L 470 350 Z" fill="#f0f5ff" stroke="#2068d8" stroke-width="2" />
+      <path d="M 345 350 L 370 330 L 430 330 L 455 350 Z" fill="#4287f5" opacity="0.2" />
+      
+      <!-- Car top/cabin -->
+      <path d="M 375 320 L 390 300 L 410 300 L 425 320 Z" fill="#f0f5ff" stroke="#2068d8" stroke-width="1.5" />
+      <path d="M 380 320 L 390 305 L 410 305 L 420 320 Z" fill="#4287f5" opacity="0.3" />
+      
+      <!-- Car details -->
+      <path d="M 360 320 L 365 330 L 435 330 L 440 320" fill="none" stroke="#2068d8" stroke-width="1" />
+      <path d="M 390 300 L 395 315 L 405 315 L 410 300" fill="none" stroke="#2068d8" stroke-width="1" />
+      
+      <!-- Wheels -->
+      <g>
+        <circle cx="355" cy="350" r="15" fill="#f0f5ff" stroke="#2068d8" stroke-width="2" />
+        <circle cx="355" cy="350" r="8" fill="#2068d8" opacity="0.5" />
+        <circle cx="355" cy="350" r="4" fill="#f0f5ff" />
+        
+        <circle cx="445" cy="350" r="15" fill="#f0f5ff" stroke="#2068d8" stroke-width="2" />
+        <circle cx="445" cy="350" r="8" fill="#2068d8" opacity="0.5" />
+        <circle cx="445" cy="350" r="4" fill="#f0f5ff" />
+        
+        <!-- Spinning effect for wheels - faster for 1.7s runtime -->
+        <path d="M 355 350 L 355 335" stroke="#2068d8" stroke-width="1" opacity="0.8">
+          <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 355 350" to="360 355 350" dur="0.425s" repeatCount="indefinite" />
+        </path>
+        <path d="M 445 350 L 445 335" stroke="#2068d8" stroke-width="1" opacity="0.8">
+          <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 445 350" to="360 445 350" dur="0.425s" repeatCount="indefinite" />
+        </path>
+      </g>
+      
+      <!-- Car lights - more intense -->
+      <rect x="330" y="335" width="8" height="5" fill="#ff5555" opacity="0.8" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.8;1;0.8" dur="0.85s" repeatCount="indefinite" />
+      </rect>
+      <rect x="330" y="340" width="8" height="5" fill="#ff5555" opacity="0.8" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.8;1;0.8" dur="0.85s" repeatCount="indefinite" begin="0.425s" />
+      </rect>
+      <rect x="462" y="335" width="8" height="5" fill="#ffffff" opacity="0.8" stroke="#2068d8" stroke-width="0.5" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.8;1;0.8" dur="0.85s" repeatCount="indefinite" />
+      </rect>
+      <rect x="462" y="340" width="8" height="5" fill="#ffffff" opacity="0.8" stroke="#2068d8" stroke-width="0.5" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.8;1;0.8" dur="0.85s" repeatCount="indefinite" begin="0.425s" />
+      </rect>
+      
+      <!-- Car slight hovering effect - synced to 1.7s -->
+      <animateTransform attributeName="transform" attributeType="XML" type="translate" values="0,0; 0,-3; 0,0" dur="1.7s" repeatCount="indefinite" />
+    </g>
+  
+    <!-- Loading indicator - synced to 1.7s -->
+    <g transform="translate(350, 230)">
+      <text x="0" y="0" font-family="Arial" font-size="16" fill="#2068d8" text-anchor="middle" font-weight="bold">LOADING</text>
+      <g transform="translate(70, 0)">
+        <circle cx="0" cy="0" r="3" fill="#2068d8">
+          <animate attributeName="opacity" values="1;0.2;1" dur="1.7s" repeatCount="indefinite" begin="0s" />
+        </circle>
+        <circle cx="10" cy="0" r="3" fill="#2068d8">
+          <animate attributeName="opacity" values="1;0.2;1" dur="1.7s" repeatCount="indefinite" begin="0.566s" />
+        </circle>
+        <circle cx="20" cy="0" r="3" fill="#2068d8">
+          <animate attributeName="opacity" values="1;0.2;1" dur="1.7s" repeatCount="indefinite" begin="1.133s" />
+        </circle>
+      </g>
+    </g>
+  
+    <!-- Progress bar - completes in 1.7s -->
+    <rect x="250" y="250" width="300" height="6" fill="#f0f5ff" stroke="#2068d8" stroke-width="1" rx="3" ry="3" />
+    <rect x="250" y="250" width="0" height="6" fill="#4287f5" rx="3" ry="3">
+      <animate attributeName="width" values="0;300" dur="1.7s" repeatCount="indefinite" />
+    </rect>
+  
+    <!-- Particle effects behind car - faster for 1.7s runtime -->
+    <g>
+      <circle cx="330" cy="340" r="2" fill="#4287f5" opacity="0.7">
+        <animate attributeName="cx" values="330;270" dur="0.51s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.7;0" dur="0.51s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="330" cy="345" r="2" fill="#4287f5" opacity="0.7">
+        <animate attributeName="cx" values="330;280" dur="0.425s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.7;0" dur="0.425s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="330" cy="335" r="2" fill="#4287f5" opacity="0.7">
+        <animate attributeName="cx" values="330;290" dur="0.595s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.7;0" dur="0.595s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="330" cy="330" r="1" fill="#4287f5" opacity="0.6">
+        <animate attributeName="cx" values="330;300" dur="0.68s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.6;0" dur="0.68s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="330" cy="350" r="1" fill="#4287f5" opacity="0.6">
+        <animate attributeName="cx" values="330;310" dur="0.467s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.6;0" dur="0.467s" repeatCount="indefinite" />
+      </circle>
+    </g>
+  </svg>

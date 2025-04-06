@@ -6,49 +6,487 @@
   <title>Wise Move MVP Dashboard</title>
   <link rel="stylesheet" href="styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* Weather Loader Styles (unchanged) */
+    :root {
+      --sky-sunny: #87CEEB;
+      --sky-stormy: #546E7A;
+      --ground-color: #3D6E54;
+      --pine-trunk: #5D4037;
+      --pine-foliage-dark: #235434;
+      --pine-foliage-medium: #3A7E5A;
+      --pine-foliage-light: #4CAF50;
+      --sun-color: #FF9800;
+      --sun-glow: #FFEB3B;
+      --cloud-light: #F5F5F5;
+      --cloud-dark: #607D8B;
+      --rain-color: #B3E5FC;
+      --total-duration: 3s;
+    }
+
+    .loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    /* Weather Loader Container */
+    .weather-loader-container {
+      position: relative;
+      width: 80vw;
+      max-width: 600px;
+      height: 50vh;
+      max-height: 400px;
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .scene { position: relative; width: 100%; height: 100%; animation: scene-transition var(--total-duration) ease-in-out forwards; }
+    .sky { position: absolute; top: 0; left: 0; width: 100%; height: 65%; background-color: var(--sky-sunny); animation: sky-darken var(--total-duration) ease-in-out forwards; }
+    .ground { position: absolute; bottom: 0; left: 0; width: 100%; height: 35%; background-color: var(--ground-color); z-index: 1; }
+    .sun { position: absolute; top: 120%; left: 75%; width: 15vmin; height: 15vmin; background: radial-gradient(circle, var(--sun-color) 60%, transparent 100%); border-radius: 50%; animation: sun-rise 1s ease-out forwards; z-index: 2; }
+    .sun::before { content: ''; position: absolute; top: -30%; left: -30%; width: 160%; height: 160%; background: radial-gradient(circle, rgba(255, 235, 59, 0.3) 40%, transparent 70%); border-radius: 50%; animation: sun-glow var(--total-duration) ease-in-out forwards; }
+    .pine-trees { position: absolute; bottom: 35%; width: 100%; height: 45%; z-index: 3; }
+    .pine-tree { position: absolute; bottom: 0; height: 100%; width: 8vmin; animation: tree-sway 4s ease-in-out infinite alternate; transform-origin: bottom center; }
+    .pine-tree:nth-child(1) { left: 15%; height: 95%; animation-delay: 0.2s; }
+    .pine-tree:nth-child(2) { left: 38%; height: 85%; animation-delay: 0.7s; }
+    .pine-tree:nth-child(3) { left: 62%; height: 90%; animation-delay: 0.5s; }
+    .pine-tree:nth-child(4) { left: 85%; height: 80%; animation-delay: 0.9s; }
+    .pine-tree:nth-child(5) { left: 25%; height: 70%; animation-delay: 0.3s; z-index: 4; }
+    .pine-tree-trunk { position: absolute; bottom: 0; left: 50%; width: 1.2vmin; height: 25%; transform: translateX(-50%); background: linear-gradient(to right, var(--pine-trunk) 10%, #795548 50%, var(--pine-trunk) 90%); z-index: 1; }
+    .pine-tree-foliage { position: absolute; bottom: 20%; left: 50%; transform: translateX(-50%); z-index: 2; }
+    .foliage-layer { width: 0; height: 0; border-left: 4vmin solid transparent; border-right: 4vmin solid transparent; position: absolute; left: 50%; transform: translateX(-50%); }
+    .foliage-layer:nth-child(1) { border-bottom: 7vmin solid var(--pine-foliage-dark); bottom: -5%; }
+    .foliage-layer:nth-child(2) { border-bottom: 6vmin solid var(--pine-foliage-medium); bottom: 25%; border-left: 3.5vmin solid transparent; border-right: 3.5vmin solid transparent; }
+    .foliage-layer:nth-child(3) { border-bottom: 5vmin solid var(--pine-foliage-light); bottom: 50%; border-left: 3vmin solid transparent; border-right: 3vmin solid transparent; }
+    .foliage-layer:nth-child(4) { border-bottom: 4vmin solid var(--pine-foliage-medium); bottom: 70%; border-left: 2.5vmin solid transparent; border-right: 2.5vmin solid transparent; }
+    .cloud { position: absolute; background: var(--cloud-light); border-radius: 50%; opacity: 0; animation: cloud-appear 1s ease-in forwards; animation-delay: 1s; z-index: 4; }
+    .cloud-1 { width: 20vmin; height: 8vmin; top: 15%; left: 20%; }
+    .cloud-1::before, .cloud-1::after { content: ''; position: absolute; background: inherit; border-radius: 50%; }
+    .cloud-1::before { width: 12vmin; height: 12vmin; top: -80%; left: 10%; }
+    .cloud-1::after { width: 10vmin; height: 10vmin; top: -60%; right: 15%; }
+    .cloud-2 { width: 25vmin; height: 10vmin; top: 20%; right: 15%; animation-delay: 1.3s; }
+    .cloud-2::before, .cloud-2::after { content: ''; position: absolute; background: inherit; border-radius: 50%; }
+    .cloud-2::before { width: 15vmin; height: 15vmin; top: -90%; left: 5%; }
+    .cloud-2::after { width: 12vmin; height: 12vmin; top: -70%; right: 20%; }
+    .rain-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; opacity: 0; animation: rain-appear 1s ease-in forwards; animation-delay: 2s; }
+    .raindrop { position: absolute; width: 0.15vmin; height: 2vmin; background: linear-gradient(to bottom, transparent, var(--rain-color) 30%, var(--rain-color) 100%); border-radius: 50%; opacity: 0.7; animation: raindrop-fall linear infinite; }
+    .raindrop:nth-child(1) { left: 2%; top: -10%; animation-duration: 0.7s; animation-delay: 0.1s; }
+    .raindrop:nth-child(2) { left: 5%; top: -15%; animation-duration: 0.9s; animation-delay: 0.3s; }
+    .raindrop:nth-child(3) { left: 8%; top: -20%; animation-duration: 0.6s; animation-delay: 0.5s; }
+    .raindrop:nth-child(4) { left: 12%; top: -25%; animation-duration: 0.8s; animation-delay: 0.2s; }
+    .raindrop:nth-child(5) { left: 15%; top: -30%; animation-duration: 0.7s; animation-delay: 0.4s; }
+    .raindrop:nth-child(6) { left: 20%; top: -10%; animation-duration: 0.9s; animation-delay: 0.6s; }
+    .raindrop:nth-child(7) { left: 25%; top: -15%; animation-duration: 0.6s; animation-delay: 0.8s; }
+    .raindrop:nth-child(8) { left: 30%; top: -20%; animation-duration: 0.8s; animation-delay: 0.7s; }
+    .raindrop:nth-child(9) { left: 35%; top: -25%; animation-duration: 0.7s; animation-delay: 0.9s; }
+    .raindrop:nth-child(10) { left: 40%; top: -30%; animation-duration: 0.9s; animation-delay: 0.5s; }
+    .splash { position: absolute; bottom: 35%; width: 0.3vmin; height: 0.3vmin; background-color: var(--rain-color); border-radius: 50%; opacity: 0; animation: splash 0.5s ease-out infinite; z-index: 3; }
+    .splash:nth-child(1) { left: 10%; animation-delay: 0.2s; }
+    .splash:nth-child(2) { left: 20%; animation-delay: 0.4s; }
+    .splash:nth-child(3) { left: 30%; animation-delay: 0.6s; }
+    .splash:nth-child(4) { left: 40%; animation-delay: 0.8s; }
+    .splash:nth-child(5) { left: 50%; animation-delay: 0.3s; }
+
+    /* Cost Loader Container */
+    .cost-loader-container {
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+      padding: 20px;
+      box-sizing: border-box;
+      background: transparent;
+    }
+
+    .loader-title {
+      font-size: clamp(20px, 5vw, 24px);
+      color: #fff;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .loader {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      width: 100%;
+      height: 80px;
+      margin: 0 auto;
+    }
+
+    .loader-icon {
+      position: absolute;
+      font-size: clamp(24px, 6vw, 30px);
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.3s ease;
+    }
+
+    .food { color: #FF6B6B; }
+    .hotel { color: #4ECDC4; }
+    .house { color: #45B7D1; }
+    .place { color: #FFBE0B; }
+    .school { color: #8338EC; }
+    .shopping { color: #FF006E; }
+    .transport { color: #3A86FF; }
+
+    .loading-text {
+      margin-top: 15px;
+      font-size: clamp(14px, 3.5vw, 16px);
+      color: #ccc;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .progress-container {
+      width: 100%;
+      max-width: 250px;
+      margin: 15px auto;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background-color: #e0e0e0;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #FF6B6B, #8338EC);
+      transition: width 0.3s ease;
+    }
+
+    /* Transport Loader Container */
+    .transport-loader-container {
+      width: 800px;
+      height: 400px;
+      background: transparent;
+    }
+
+    /* Animation Keyframes */
+    @keyframes scene-transition { 0% { filter: brightness(1); } 100% { filter: brightness(0.7); } }
+    @keyframes sky-darken { 0%, 33% { background-color: var(--sky-sunny); } 66%, 100% { background-color: var(--sky-stormy); } }
+    @keyframes sun-rise { 0% { top: 120%; opacity: 0; } 33% { top: 20%; opacity: 1; } 66% { top: 20%; opacity: 0.5; } 100% { top: 20%; opacity: 0.2; } }
+    @keyframes sun-glow { 0%, 33% { opacity: 0.8; } 66%, 100% { opacity: 0; } }
+    @keyframes cloud-appear { 0% { opacity: 0; transform: translateY(5vh) scale(0.8); } 50% { opacity: 0.7; transform: translateY(0) scale(1); background-color: var(--cloud-light); } 100% { opacity: 1; transform: translateY(0) scale(1.1); background-color: var(--cloud-dark); } }
+    @keyframes tree-sway { 0% { transform: rotate(-1deg); } 100% { transform: rotate(1deg); } }
+    @keyframes rain-appear { 0% { opacity: 0; } 100% { opacity: 1; } }
+    @keyframes raindrop-fall { 0% { transform: translateY(-10px) scaleY(1); opacity: 0; } 5% { opacity: 0.7; } 95% { opacity: 0.7; } 100% { transform: translateY(100vh) scaleY(1.5); opacity: 0; } }
+    @keyframes splash { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(2); opacity: 0.7; } 100% { transform: scale(4); opacity: 0; } }
+
+    /* Media Queries */
+    @media (max-width: 768px) {
+      .weather-loader-container { width: 90vw; height: 60vh; }
+      .pine-tree { width: 10vmin; }
+      .raindrop { width: 0.2vmin; height: 2.5vmin; }
+      .transport-loader-container { width: 600px; height: 300px; }
+      .cost-loader-container { width: 80%; }
+      .loader { height: 70px; }
+    }
+
+    @media (max-width: 480px) {
+      .weather-loader-container { width: 95vw; height: 50vh; }
+      .pine-tree-trunk { width: 1.5vmin; }
+      .transport-loader-container { width: 400px; height: 200px; }
+      .cost-loader-container { width: 90%; padding: 15px; }
+      .loader { height: 60px; }
+    }
+  </style>
 </head>
 <body>
   <!-- Gradient Background -->
   <div class="gradient-bg"></div>
 
+  <!-- Weather Loader Overlay -->
+  <div class="loader-overlay" id="weatherLoaderOverlay">
+    <div class="weather-loader-container">
+      <div class="scene">
+        <div class="sky"></div>
+        <div class="ground"></div>
+        <div class="sun"></div>
+        <div class="pine-trees">
+          <div class="pine-tree"><div class="pine-tree-trunk"></div><div class="pine-tree-foliage"><div class="foliage-layer"></div><div class="foliage-layer"></div><div class="foliage-layer"></div><div class="foliage-layer"></div></div></div>
+          <div class="pine-tree"><div class="pine-tree-trunk"></div><div class="pine-tree-foliage"><div class="foliage-layer"></div><div class="foliage-layer"></div><div class="foliage-layer"></div><div class="foliage-layer"></div></div></div>
+          <div class="pine-tree"><div class="pine-tree-trunk"></div><div class="pine-tree-foliage"><div class="foliage-layer"></div><div class="foliage-layer"></div><div class="foliage-layer"></div><div class="foliage-layer"></div></div></div>
+          <div class="pine-tree"><div class="pine-tree-trunk"></div><div class="pine-tree-foliage"><div class="foliage-layer"></div><div class="foliage-layer"></div><div class="foliage-layer"></div><div class="foliage-layer"></div></div></div>
+          <div class="pine-tree"><div class="pine-tree-trunk"></div><div class="pine-tree-foliage"><div class="foliage-layer"></div><div class="foliage-layer"></div><div class="foliage-layer"></div><div class="foliage-layer"></div></div></div>
+        </div>
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="rain-container">
+          <div class="raindrop"></div><div class="raindrop"></div><div class="raindrop"></div><div class="raindrop"></div><div class="raindrop"></div>
+          <div class="raindrop"></div><div class="raindrop"></div><div class="raindrop"></div><div class="raindrop"></div><div class="raindrop"></div>
+          <div class="raindrop"></div><div class="raindrop"></div><div class="raindrop"></div><div class="raindrop"></div><div class="raindrop"></div>
+          <div class="raindrop"></div><div class="raindrop"></div><div class="raindrop"></div><div class="raindrop"></div><div class="raindrop"></div>
+          <div class="raindrop"></div><div class="raindrop"></div><div class="raindrop"></div><div class="raindrop"></div><div class="raindrop"></div>
+          <div class="splash"></div><div class="splash"></div><div class="splash"></div><div class="splash"></div><div class="splash"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cost Loader Overlay -->
+  <div class="loader-overlay" id="costLoaderOverlay">
+    <div class="cost-loader-container">
+      <div class="loader-title">Discover Amazing Places</div>
+      <div class="loader">
+        <i class="loader-icon food fas fa-utensils"></i>
+        <i class="loader-icon hotel fas fa-hotel"></i>
+        <i class="loader-icon house fas fa-home"></i>
+        <i class="loader-icon place fas fa-umbrella-beach"></i>
+        <i class="loader-icon school fas fa-school"></i>
+        <i class="loader-icon shopping fas fa-shopping-bag"></i>
+        <i class="loader-icon transport fas fa-bus"></i>
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress"></div>
+        </div>
+      </div>
+      <div class="loading-text">Starting your journey...</div>
+    </div>
+  </div>
+
+  <!-- Transport Loader Overlay -->
+  <div class="loader-overlay" id="transportLoaderOverlay">
+    <div class="transport-loader-container">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+        <!-- Background with grid -->
+        <defs>
+          <linearGradient id="roadGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#e0e0e0" />
+            <stop offset="100%" stop-color="#d0d0d0" />
+          </linearGradient>
+          <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#c9eeff" />
+            <stop offset="100%" stop-color="#e8f7ff" />
+          </linearGradient>
+          <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse">
+            <path d="M 80 0 L 0 0 0 80" fill="none" stroke="#a0c0ff" stroke-width="0.5" opacity="0.3"/>
+          </pattern>
+          <radialGradient id="carGlow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+            <stop offset="0%" stop-color="#4287f5" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#4287f5" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
+          </filter>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2" result="blur"/>
+            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+          </filter>
+        </defs>
+        <!-- Sky -->
+        <rect x="0" y="0" width="800" height="250" fill="url(#skyGradient)" />
+        <rect x="0" y="0" width="800" height="250" fill="url(#grid)" />
+        <!-- Road -->
+        <rect x="0" y="250" width="800" height="150" fill="url(#roadGradient)" />
+        <!-- Road lines -->
+        <rect x="0" y="260" width="800" height="2" fill="#a0a0a0" />
+        <rect x="0" y="390" width="800" height="2" fill="#a0a0a0" />
+        <!-- Dashed center line -->
+        <g>
+          <rect x="20" y="325" width="50" height="4" fill="#2068d8">
+            <animate attributeName="x" values="800;-50" dur="1.7s" repeatCount="indefinite" />
+          </rect>
+          <rect x="120" y="325" width="50" height="4" fill="#2068d8">
+            <animate attributeName="x" values="900;50" dur="1.7s" repeatCount="indefinite" />
+          </rect>
+          <rect x="220" y="325" width="50" height="4" fill="#2068d8">
+            <animate attributeName="x" values="1000;150" dur="1.7s" repeatCount="indefinite" />
+          </rect>
+          <rect x="320" y="325" width="50" height="4" fill="#2068d8">
+            <animate attributeName="x" values="1100;250" dur="1.7s" repeatCount="indefinite" />
+          </rect>
+          <rect x="420" y="325" width="50" height="4" fill="#2068d8">
+            <animate attributeName="x" values="1200;350" dur="1.7s" repeatCount="indefinite" />
+          </rect>
+          <rect x="520" y="325" width="50" height="4" fill="#2068d8">
+            <animate attributeName="x" values="1300;450" dur="1.7s" repeatCount="indefinite" />
+          </rect>
+          <rect x="620" y="325" width="50" height="4" fill="#2068d8">
+            <animate attributeName="x" values="1400;550" dur="1.7s" repeatCount="indefinite" />
+          </rect>
+          <rect x="720" y="325" width="50" height="4" fill="#2068d8">
+            <animate attributeName="x" values="1500;650" dur="1.7s" repeatCount="indefinite" />
+          </rect>
+        </g>
+        <!-- Futuristic buildings -->
+        <g>
+          <rect x="100" y="100" width="30" height="150" fill="#e8f0ff" stroke="#a0c0ff" stroke-width="1" />
+          <rect x="170" y="130" width="40" height="120" fill="#e8f0ff" stroke="#a0c0ff" stroke-width="1" />
+          <rect x="250" y="80" width="50" height="170" fill="#e8f0ff" stroke="#a0c0ff" stroke-width="1" />
+          <rect x="340" y="140" width="35" height="110" fill="#e8f0ff" stroke="#a0c0ff" stroke-width="1" />
+          <rect x="420" y="170" width="25" height="80" fill="#e8f0ff" stroke="#a0c0ff" stroke-width="1" />
+          <rect x="480" y="120" width="45" height="130" fill="#e8f0ff" stroke="#a0c0ff" stroke-width="1" />
+          <rect x="560" y="150" width="30" height="100" fill="#e8f0ff" stroke="#a0c0ff" stroke-width="1" />
+          <rect x="620" y="90" width="55" height="160" fill="#e8f0ff" stroke="#a0c0ff" stroke-width="1" />
+          <rect x="710" y="160" width="20" height="90" fill="#e8f0ff" stroke="#a0c0ff" stroke-width="1" />
+        </g>
+        <!-- Building lights -->
+        <g>
+          <circle cx="115" cy="120" r="2" fill="#4287f5">
+            <animate attributeName="opacity" values="0.3;1;0.3" dur="1.7s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="115" cy="140" r="2" fill="#4287f5">
+            <animate attributeName="opacity" values="0.3;1;0.3" dur="1.36s" repeatCount="indefinite" begin="0.34s" />
+          </circle>
+          <circle cx="190" cy="150" r="2" fill="#4287f5">
+            <animate attributeName="opacity" values="0.3;1;0.3" dur="1.19s" repeatCount="indefinite" begin="0.51s" />
+          </circle>
+          <circle cx="275" cy="100" r="2" fill="#4287f5">
+            <animate attributeName="opacity" values="0.3;1;0.3" dur="1.53s" repeatCount="indefinite" begin="0.17s" />
+          </circle>
+          <circle cx="275" cy="130" r="2" fill="#4287f5">
+            <animate attributeName="opacity" values="0.3;1;0.3" dur="1.36s" repeatCount="indefinite" begin="0.34s" />
+          </circle>
+          <circle cx="357" cy="160" r="2" fill="#4287f5">
+            <animate attributeName="opacity" values="0.3;1;0.3" dur="1.19s" repeatCount="indefinite" begin="0.51s" />
+          </circle>
+          <circle cx="502" cy="140" r="2" fill="#4287f5">
+            <animate attributeName="opacity" values="0.3;1;0.3" dur="1.36s" repeatCount="indefinite" begin="0.34s" />
+          </circle>
+          <circle cx="575" cy="170" r="2" fill="#4287f5">
+            <animate attributeName="opacity" values="0.3;1;0.3" dur="1.53s" repeatCount="indefinite" begin="0.17s" />
+          </circle>
+          <circle cx="647" cy="110" r="2" fill="#4287f5">
+            <animate attributeName="opacity" values="0.3;1;0.3" dur="1.19s" repeatCount="indefinite" begin="0.51s" />
+          </circle>
+          <circle cx="647" cy="140" r="2" fill="#4287f5">
+            <animate attributeName="opacity" values="0.3;1;0.3" dur="1.36s" repeatCount="indefinite" begin="0.34s" />
+          </circle>
+          <circle cx="720" cy="180" r="2" fill="#4287f5">
+            <animate attributeName="opacity" values="0.3;1;0.3" dur="1.19s" repeatCount="indefinite" begin="0.51s" />
+          </circle>
+        </g>
+        <!-- Car glow effect -->
+        <circle cx="400" cy="350" r="60" fill="url(#carGlow)" filter="url(#blur)">
+          <animate attributeName="opacity" values="0.4;0.7;0.4" dur="1.7s" repeatCount="indefinite" />
+        </circle>
+        <!-- Futuristic Car -->
+        <g>
+          <path d="M 330 350 L 360 320 L 440 320 L 470 350 Z" fill="#f0f5ff" stroke="#2068d8" stroke-width="2" />
+          <path d="M 345 350 L 370 330 L 430 330 L 455 350 Z" fill="#4287f5" opacity="0.2" />
+          <path d="M 375 320 L 390 300 L 410 300 L 425 320 Z" fill="#f0f5ff" stroke="#2068d8" stroke-width="1.5" />
+          <path d="M 380 320 L 390 305 L 410 305 L 420 320 Z" fill="#4287f5" opacity="0.3" />
+          <path d="M 360 320 L 365 330 L 435 330 L 440 320" fill="none" stroke="#2068d8" stroke-width="1" />
+          <path d="M 390 300 L 395 315 L 405 315 L 410 300" fill="none" stroke="#2068d8" stroke-width="1" />
+          <g>
+            <circle cx="355" cy="350" r="15" fill="#f0f5ff" stroke="#2068d8" stroke-width="2" />
+            <circle cx="355" cy="350" r="8" fill="#2068d8" opacity="0.5" />
+            <circle cx="355" cy="350" r="4" fill="#f0f5ff" />
+            <circle cx="445" cy="350" r="15" fill="#f0f5ff" stroke="#2068d8" stroke-width="2" />
+            <circle cx="445" cy="350" r="8" fill="#2068d8" opacity="0.5" />
+            <circle cx="445" cy="350" r="4" fill="#f0f5ff" />
+            <path d="M 355 350 L 355 335" stroke="#2068d8" stroke-width="1" opacity="0.8">
+              <animateTransform attributeName="transform" type="rotate" from="0 355 350" to="360 355 350" dur="0.425s" repeatCount="indefinite" />
+            </path>
+            <path d="M 445 350 L 445 335" stroke="#2068d8" stroke-width="1" opacity="0.8">
+              <animateTransform attributeName="transform" type="rotate" from="0 445 350" to="360 445 350" dur="0.425s" repeatCount="indefinite" />
+            </path>
+          </g>
+          <rect x="330" y="335" width="8" height="5" fill="#ff5555" opacity="0.8" filter="url(#glow)">
+            <animate attributeName="opacity" values="0.8;1;0.8" dur="0.85s" repeatCount="indefinite" />
+          </rect>
+          <rect x="330" y="340" width="8" height="5" fill="#ff5555" opacity="0.8" filter="url(#glow)">
+            <animate attributeName="opacity" values="0.8;1;0.8" dur="0.85s" repeatCount="indefinite" begin="0.425s" />
+          </rect>
+          <rect x="462" y="335" width="8" height="5" fill="#ffffff" opacity="0.8" stroke="#2068d8" stroke-width="0.5" filter="url(#glow)">
+            <animate attributeName="opacity" values="0.8;1;0.8" dur="0.85s" repeatCount="indefinite" />
+          </rect>
+          <rect x="462" y="340" width="8" height="5" fill="#ffffff" opacity="0.8" stroke="#2068d8" stroke-width="0.5" filter="url(#glow)">
+            <animate attributeName="opacity" values="0.8;1;0.8" dur="0.85s" repeatCount="indefinite" begin="0.425s" />
+          </rect>
+          <animateTransform attributeName="transform" type="translate" values="0,0; 0,-3; 0,0" dur="1.7s" repeatCount="indefinite" />
+        </g>
+        <!-- Loading indicator -->
+        <g transform="translate(350, 230)">
+          <text x="0" y="0" font-family="Arial" font-size="16" fill="#2068d8" text-anchor="middle" font-weight="bold">LOADING</text>
+          <g transform="translate(70, 0)">
+            <circle cx="0" cy="0" r="3" fill="#2068d8">
+              <animate attributeName="opacity" values="1;0.2;1" dur="1.7s" repeatCount="indefinite" begin="0s" />
+            </circle>
+            <circle cx="10" cy="0" r="3" fill="#2068d8">
+              <animate attributeName="opacity" values="1;0.2;1" dur="1.7s" repeatCount="indefinite" begin="0.566s" />
+            </circle>
+            <circle cx="20" cy="0" r="3" fill="#2068d8">
+              <animate attributeName="opacity" values="1;0.2;1" dur="1.7s" repeatCount="indefinite" begin="1.133s" />
+            </circle>
+          </g>
+        </g>
+        <!-- Progress bar -->
+        <rect x="250" y="250" width="300" height="6" fill="#f0f5ff" stroke="#2068d8" stroke-width="1" rx="3" ry="3" />
+        <rect x="250" y="250" width="0" height="6" fill="#4287f5" rx="3" ry="3">
+          <animate attributeName="width" values="0;300" dur="1.7s" repeatCount="indefinite" />
+        </rect>
+        <!-- Particle effects -->
+        <g>
+          <circle cx="330" cy="340" r="2" fill="#4287f5" opacity="0.7">
+            <animate attributeName="cx" values="330;270" dur="0.51s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.7;0" dur="0.51s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="330" cy="345" r="2" fill="#4287f5" opacity="0.7">
+            <animate attributeName="cx" values="330;280" dur="0.425s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.7;0" dur="0.425s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="330" cy="335" r="2" fill="#4287f5" opacity="0.7">
+            <animate attributeName="cx" values="330;290" dur="0.595s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.7;0" dur="0.595s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="330" cy="330" r="1" fill="#4287f5" opacity="0.6">
+            <animate attributeName="cx" values="330;300" dur="0.68s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.6;0" dur="0.68s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="330" cy="350" r="1" fill="#4287f5" opacity="0.6">
+            <animate attributeName="cx" values="330;310" dur="0.467s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.6;0" dur="0.467s" repeatCount="indefinite" />
+          </circle>
+        </g>
+      </svg>
+    </div>
+  </div>
+
   <!-- Main Dashboard Content -->
   <div class="dashboard">
-    <!-- Header -->
     <header class="header animate-fade">
       <h1>Wise Move</h1>
       <div class="search-bar">
-        <input
-          type="text"
-          id="searchInput"
-          placeholder="Search for a city..."
-          class="animate-slide"
-        />
-        <button onclick="searchCity()" class="gradient-button animate-pulse">
-          Search
-        </button>
+        <input type="text" id="searchInput" placeholder="Search for a city..." class="animate-slide" />
+        <button onclick="searchCity()" class="gradient-button animate-pulse">Search</button>
       </div>
     </header>
 
-    <!-- Quick Stats -->
     <div class="stats-bar animate-fade">
-      <span id="statPopulation"></span> |
-      <span id="statDensity"></span> |
-      <span id="statPollution">Pollution: N/A</span>
+      <span id="statPopulation"></span> | <span id="statDensity"></span> | <span id="statPollution">Pollution: N/A</span>
     </div>
 
-    <!-- City Info -->
     <section class="city-info animate-slide">
       <h2 id="cityName"></h2>
       <p id="cityDescription" class="description-text"></p>
     </section>
 
-    <!-- Dashboard Sections -->
     <div class="dashboard-sections">
       <div class="section gradient-section animate-fade">
         <h2>Cost of Living</h2>
         <div class="chart-container">
           <canvas id="costChart"></canvas>
         </div>
+        <button onclick="showCostDetails()" class="gradient-button animate-pulse">More Info</button>
       </div>
       <div class="section gradient-section animate-fade">
         <h2>Housing</h2>
@@ -57,27 +495,23 @@
       <div class="section gradient-section animate-fade">
         <h2>Transport</h2>
         <p id="transportInfo" class="description-text"></p>
+        <button onclick="showTransportDetails()" class="gradient-button animate-pulse">More Info</button>
       </div>
       <div class="section gradient-section animate-fade">
         <h2>Reviews</h2>
         <div id="reviewsList" class="description-text"></div>
-        <input
-          id="reviewInput"
-          type="text"
-          placeholder="Add a review..."
-          class="form-control animate-slide"
-        />
-        <button onclick="addReview()" class="gradient-button animate-pulse">
-          Submit
-        </button>
+        <input id="reviewInput" type="text" placeholder="Add a review..." class="form-control animate-slide" />
+        <button onclick="addReview()" class="gradient-button animate-pulse">Submit</button>
       </div>
       <div class="section gradient-section weather-widget animate-fade">
         <h2>Weather</h2>
         <p id="weatherInfo" class="description-text"></p>
+        <p id="aqiInfo" class="description-text">AQI: Loading...</p>
+        <p id="pollutionInfo" class="description-text">Pollution: Loading...</p>
+        <button onclick="showWeatherDetails()" class="gradient-button animate-pulse">View Details</button>
       </div>
     </div>
 
-    <!-- Chatbot UI -->
     <button class="gradient-button chatbot-toggle animate-pulse" onclick="toggleChatbot()">Chat</button>
     <div class="chatbot-popup gradient-section" id="chatbotPopup">
       <div class="chatbot-header">
@@ -89,12 +523,11 @@
       </div>
       <div class="chatbot-messages" id="chatbotMessages"></div>
       <div class="chatbot-input-container">
-        <input type="text" class="chatbot-input" id="chatbotInput" placeholder="Type your message..." onkeydown="if(event.key === 'Enter') sendMessage()">
+        <input type="text" class="chatbot-input" id="chatbotInput" placeholder="Type your message..." onkeydown="if(event.key === 'Enter') sendMessage()" />
         <button onclick="sendMessage()">▶</button>
       </div>
     </div>
 
-    <!-- Comparison Modal -->
     <div class="modal" id="compareModal">
       <div class="modal-content gradient-section animate-fade">
         <span class="close" onclick="closeModal()">×</span>
@@ -110,5 +543,78 @@
   </div>
 
   <script src="script.js"></script>
+  <script>
+    // Cost Loader Animation Script
+    const costLoaderOverlay = document.getElementById('costLoaderOverlay');
+    const icons = costLoaderOverlay.querySelectorAll('.loader-icon');
+    const progress = costLoaderOverlay.querySelector('.progress');
+    const loadingText = costLoaderOverlay.querySelector('.loading-text');
+    const title = costLoaderOverlay.querySelector('.loader-title');
+    
+    const texts = [
+      "Finding best restaurants...",
+      "Locating top-rated hotels...",
+      "Searching beautiful homes...",
+      "Discovering amazing places...",
+      "Identifying excellent schools...",
+      "Looking for shopping areas...",
+      "Checking transportation options..."
+    ];
+    
+    const totalIcons = icons.length;
+    const totalTime = 1500; // 1.5 seconds
+    let startTime = null;
+    let animationFrameId = null;
+    
+    function animateCostLoader(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progressPercent = Math.min((elapsed / totalTime) * 100, 100);
+      
+      // Update progress bar
+      progress.style.width = `${progressPercent}%`;
+      
+      // Calculate current icon index
+      const currentIndex = Math.floor((elapsed / totalTime) * totalIcons);
+      
+      // Show current icon and hide others
+      icons.forEach((icon, index) => {
+        if (index === currentIndex % totalIcons) {
+          icon.style.opacity = '1';
+          icon.style.transform = 'scale(1)';
+        } else {
+          icon.style.opacity = '0';
+          icon.style.transform = 'scale(0.5)';
+        }
+      });
+      
+      // Update loading text
+      if (currentIndex < totalIcons) {
+        loadingText.textContent = texts[currentIndex];
+      }
+      
+      // Continue animation or complete
+      if (elapsed < totalTime) {
+        animationFrameId = requestAnimationFrame(animateCostLoader);
+      } else {
+        loadingText.textContent = "Ready to explore!";
+        title.textContent = "Let's Go!";
+        icons.forEach((icon, index) => {
+          icon.style.opacity = index === totalIcons - 1 ? '1' : '0';
+          icon.style.transform = index === totalIcons - 1 ? 'scale(1)' : 'scale(0.5)';
+        });
+      }
+    }
+    
+    // Reset and start animation function
+    function startCostLoader() {
+      startTime = null;
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      progress.style.width = '0%';
+      loadingText.textContent = "Starting your journey...";
+      title.textContent = "Discover Amazing Places";
+      animationFrameId = requestAnimationFrame(animateCostLoader);
+    }
+  </script>
 </body>
 </html>
